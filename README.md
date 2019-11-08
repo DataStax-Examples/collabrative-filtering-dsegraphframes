@@ -1,6 +1,24 @@
-# dseGraphFrameLoad: DSE Graph Frames Loader
+# Using DseGraphFrames to perform collaborative filtering(small example)
 
-This project walks through how to load graph data using DSE Graph Frames with Spark. The following topics are covered: 
+This demonstrates how to use [DseGraphFrames](https://docs.datastax.com/en/dse/6.0/dse-dev/datastax_enterprise/graph/graphAnalytics/dseGraphFrameOverview.html)
+via loading data and performing collaborative filtering algorithms.
+
+Contributor(s): [Paras Mehra](https://github.com/pmehra7)
+
+## Objectives
+
+* Creating and saving vertices from a CSV file
+* Creating and saving edges from a CSV file
+* Running Spark algorithms on top of DseGraphFrames
+
+## Project Layout
+
+* [schema.groovy](/src/main/resources/schema.groovy) - The graph schema for this project
+* [App.scala](/src/main/scala/com/spark/graphframes/App.scala) - The graph frames code described by this example
+
+## How this Sample Works
+This project walks through how to load graph data using DSE Graph Frames with Spark. 
+The following topics are covered: 
 1. How to run this code
 2. Create a Graph Model 
 3. Creating the Vertex DataSet
@@ -13,41 +31,25 @@ The [DSE Graph Frames] package is a Scala/Java API written to better integrate w
 
 [DSE Graph Frames]: <https://www.datastax.com/dev/blog/dse-graph-frame>
 
-## A. Set-Up 
+## Set-Up and Running
 
-***1. Pre Requisites***
+### Pre Requisites
 
-This project was designed for use with DSE 6.0. If the DSE 6.0 jars are not yet publically available, you will have to follow the instructions in [this DSE 6.0 EAP installation guide,] located in this repository in the resources directory. 
+* Scala 2.11
+* A DSE 6 cluster
 
-[dse-eap6-dep.txt]: <https://github.com/pmehra7/dseGraphFrameLoad/blob/master/src/main/resources/dse-eap6-dep.txt>
+### Setup
 
-Moving forward, this README assumes you have successfully set up DSE 6.0. 
-
-***2. Build***
-
-Clone this repository on a machine in an environment you have cloning access:
-
-```sh
-$ git clone https://github.com/pmehra7/dseGraphFrameLoad.git
-```
-
+***Build***
 Navigate to the parent directory and build this project:
 ```sh
 $ cd dseGraphFrameLoad/
 $ mvn clean install
 ```
 
-Note: If the DSE6 repo is not in the Maven Repo, go to the `dseGraphFrameLoad/src/main/resources/` directory and follow the instructions in `dse-eap6-dep.txt` to install the dependancies. 
+***Download Data***
 
-The error might look like: 
-
-```sh
-[ERROR] Failed to execute goal on project dseGraphFrames: Could not resolve dependencies for project 
-```
-
-***3. Download Data***
-
-Download the data from Kaggle: https://www.kaggle.com/c/acquire-valued-shoppers-challenge/data and download the following files: 
+Download the data from Kaggle: [https://www.kaggle.com/c/acquire-valued-shoppers-challenge/data ](https://www.kaggle.com/c/acquire-valued-shoppers-challenge/data) and download the following files: 
 
 ```sh
 transactions.csv
@@ -55,9 +57,9 @@ offers.csv
 trainHistory.csv
 ```
 
-## B. How to Run 
+### Running 
 
-***1. Start DSE***
+***Start DSE***
 
 1. In a new terminal window, navigate to your installation of DSE 6.0
 ```sh
@@ -69,7 +71,7 @@ $ cd ~/path/to/dse-6.0.0/
 $ ./bin/dse cassandra -k -s -g
 ```
 
-***2. Load Data into DSEFS***
+***Load Data into DSEFS***
  
 ```sh
 $ dse fs
@@ -79,9 +81,9 @@ $ put /path/to/offers.csv /data/
 $ put /path/to/trainHistory.csv /data/
 ```
 
-***3. Create Graph Schema***
+***Create Graph Schema***
 
-*****3.a: Gremlin Console*****
+*****Option A: Gremlin Console*****
 
 Use gremlin console to create the graph and insert the schema:
 
@@ -89,7 +91,7 @@ Use gremlin console to create the graph and insert the schema:
 $ dse gremlin-console -e /path/to/dseGraphFrameLoad/blob/master/src/main/resources/schema.groovy
 ```
 
-*****3.b: DSE Studio Notebook*****
+*****Option B: DSE Studio Notebook*****
 
 Instead of using the gremlin console, you can:
 1. Install and open a [DSE Studio Notebook]
@@ -99,14 +101,14 @@ Instead of using the gremlin console, you can:
 
 [DSE Studio Notebook]:<https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/studioGettingStarted.html>
 
-[new graph configuration through the Studio UI]:<https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/createConnectionNotebook.html>
+[New graph configuration through the Studio UI]:<https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/createConnectionNotebook.html>
 
 [schema.groovy]:<https://github.com/pmehra7/dseGraphFrameLoad/blob/master/src/main/resources/schema.groovy>
 
 
-***4. Run Spark Job***
+***Run Spark Job***
 
-The spark job reads the downloaded Kaggle data files from DSEFS, builds the required dataset, and loads the data into DSE Graph via the DataStax GraphFrames. To understand how to use DSE GraphFrames, please read [DSE Graph Frames].
+The spark job reads the downloaded [Kaggle](https://www.kaggle.com/) data files from DSEFS, builds the required dataset, and loads the data into DSE Graph via the DataStax GraphFrames. To understand how to use DSE GraphFrames, please read [DSE Graph Frames].
 
 Submit the spark job with: 
 
@@ -119,7 +121,7 @@ I used the following spark submit parameters on m4.4xlarge machines:
 $ dse spark-submit --executor-memory=22G --class com.spark.graphframes.App dseGraphFrames-1.0-SNAPSHOT.jar 
 ```
 
-### C. Graph Model
+### Graph Model
 
 ***1. Schema Description***
 
@@ -134,9 +136,9 @@ Bold: Partition Key
 Italic: Clustering Column
 
 
-***2. Vertices:***
+*** Vertices:***
 
-Each vertex label is a column in this table; the properties avaiable on the vertex are indicated via the rows.
+Each vertex label is a column in this table; the properties available on the vertex are indicated via the rows.
 
 |Product|Customer|Store|Offer|
 |-------|-------|-------|-------|
@@ -153,9 +155,9 @@ Each vertex label is a column in this table; the properties avaiable on the vert
 |date|
 
 
-***3. Edges:***
+*** Edges:***
 
-Each edge label is a column in this table; the properties avaiable on the vertex are indicated via the rows.
+Each edge label is a column in this table; the properties available on the vertex are indicated via the rows.
 
 |visits|offer_used|purchases|
 |--------------|--------------|--------------|
@@ -164,7 +166,7 @@ Each edge label is a column in this table; the properties avaiable on the vertex
 | |repeattrips|purchaseamount|
 
 
-### D. Vertices Dataset
+### Vertices Dataset
 
 The first key to understanding how to use DSE Graph Frames is to examine the vertex dataset. A vertex dataset requires a column called `~label` all parts of the primary key to be present as columns in the dataset.
 
@@ -188,7 +190,7 @@ Here we created a dataset for the **offer vertex** with the label `offer`. Notic
     <img src="https://image.ibb.co/cjEq77/label_description.png" alt="image" width="40%">
 </p>
 
-### E. Edges Dataset
+### Edges Dataset
 
 The trickiest key to understanding how to use DSE Graph Frames is to examine the edge dataset. An edge dataset requires:
 
@@ -241,4 +243,4 @@ Type :help for more information.
 
 scala> custToStore.select("src").limit(1) 
 ```
-The result is some seemingly arbitary value like: `*customer:AAAACTEwMzk4NTI0Ng==*.` This is a Spark/DSE Graph Frames id that is created based off of the `customer_e` primary key. The `dst` value is calculated in a similar way. Then the `~label` value, visits, is added to the DataSet and then the edge properties (which in this case is just the date) are added. 
+The result is some seemingly arbitrary value like: `*customer:AAAACTEwMzk4NTI0Ng==*.` This is a Spark/DSE Graph Frames id that is created based off of the `customer_e` primary key. The `dst` value is calculated in a similar way. Then the `~label` value, visits, is added to the DataSet and then the edge properties (which in this case is just the date) are added. 
