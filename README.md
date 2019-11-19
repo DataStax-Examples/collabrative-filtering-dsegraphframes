@@ -1,7 +1,6 @@
-# Using DseGraphFrames to perform collaborative filtering(small example)
-
-This demonstrates how to use [DseGraphFrames](https://docs.datastax.com/en/dse/6.0/dse-dev/datastax_enterprise/graph/graphAnalytics/dseGraphFrameOverview.html)
-via loading data and performing collaborative filtering algorithms.
+# Using DseGraphFrames to load data and perform Spark collaborative filtering
+DSE Graph Frames bring the batch and analytic power of Apache Spark™ to DataStax Graphs which can dramatically increase loading DataStax Graph data. This example shows how to use [DseGraphFrames](https://docs.datastax.com/en/dse/6.7/dse-dev/datastax_enterprise/graph/graphAnalytics/dseGraphFrameOverview.html)
+to load vertices and edges and to perform Spark collaborative filtering algorithms.
 
 Contributor(s): [Paras Mehra](https://github.com/pmehra7)
 
